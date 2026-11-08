@@ -1,10 +1,12 @@
-# Product Classification & Clustering
+# Product Clustering & Representation Learning
 
 An unsupervised machine learning project that explores product segmentation using K-Means, Autoencoder-based representation learning, and DBSCAN.
 
 ## Project Overview
 
-This project analyzes product data using unsupervised machine learning techniques.
+This project analyzes product data using unsupervised machine learning techniques to identify meaningful product groupings.
+
+The main objective is to evaluate whether **Autoencoder-based representation learning** can improve clustering quality compared with clustering directly on the original feature space.
 
 The workflow includes:
 
@@ -19,11 +21,9 @@ The workflow includes:
 - DBSCAN clustering
 - Cluster analysis and model comparison
 
-The main objective is to evaluate whether a learned latent representation can improve clustering quality compared with the original feature space.
-
 ## Dataset
 
-This project uses the Product Classification and Clustering dataset from the UCI Machine Learning Repository.
+This project uses the **Product Classification and Clustering dataset** from the UCI Machine Learning Repository.
 
 The notebook automatically downloads the dataset when needed.
 
@@ -42,22 +42,22 @@ The resulting feature matrix contains:
 - 35,311 products
 - 316 encoded features
 
-### 3. Dimensionality Reduction
+### 3. Feature Standardization and PCA
 
 The encoded features are standardized before applying PCA.
 
-PCA is used for dimensionality analysis and visualization.
+PCA is used to analyze the dimensionality of the feature space and support visualization.
 
 ### 4. K-Means Baseline
 
-K-Means is first applied to the original standardized feature space.
+K-Means is first applied to the original standardized feature space to establish a baseline.
 
-Best result:
+**Best result:**
 
 - K = 3
 - Silhouette Score = -0.0323
 
-This indicates that the original feature representation does not produce well-separated clusters.
+The negative Silhouette Score indicates that the original feature representation does not produce well-separated clusters.
 
 ### 5. Autoencoder Representation Learning
 
@@ -71,22 +71,22 @@ Architecture:
 
 The 16-dimensional latent representation is then used for downstream clustering.
 
-### 6. K-Means on Latent Space
+### 6. K-Means on Latent Representation
 
-K-Means is applied to the Autoencoder latent representation.
+K-Means is applied to the 16-dimensional latent representation learned by the Autoencoder.
 
-Best result:
+**Best result:**
 
 - K = 2
 - Silhouette Score = 0.7475
 
-This represents a substantial improvement over the original feature space.
+Compared with the baseline, the latent representation produces substantially better cluster separation.
 
-### 7. DBSCAN
+### 7. DBSCAN on Latent Representation
 
-DBSCAN is also applied to the 16-dimensional latent representation.
+DBSCAN is applied to the same 16-dimensional latent representation.
 
-Results:
+**Results:**
 
 - 265 clusters
 - 927 noise points
@@ -102,9 +102,26 @@ DBSCAN identifies a more fine-grained density-based structure than K-Means.
 | K-Means + Autoencoder | 16D latent space | 2 | 0.7475 |
 | DBSCAN + Autoencoder | 16D latent space | 265 | 0.8458 |
 
-The results show that the Autoencoder-based latent representation substantially improves cluster separation compared with the original feature space.
+The results show that the learned latent representation substantially improves cluster separation compared with the original feature space.
 
-DBSCAN achieves the highest Silhouette Score, while producing a more fine-grained clustering structure.
+DBSCAN achieves the highest Silhouette Score, while producing a much more fine-grained clustering structure than K-Means.
+
+However, a higher Silhouette Score does not automatically mean that DBSCAN produces the most useful business segmentation. The number of clusters, noise points, cluster interpretability, and business relevance should also be considered.
+
+## Key Findings
+
+1. Clustering directly on the original feature space produced poor separation, with a negative Silhouette Score.
+2. The Autoencoder successfully learned a lower-dimensional representation that improved clustering performance.
+3. K-Means on the latent representation achieved a Silhouette Score of 0.7475.
+4. DBSCAN achieved the highest Silhouette Score of 0.8458 but generated 265 clusters and 927 noise points.
+5. Therefore, clustering quality should be evaluated using both numerical metrics and the interpretability of the resulting clusters.
+
+## Limitations
+
+- The clustering results are based on the available product attributes and may not capture all real-world factors influencing product similarity.
+- Silhouette Score alone is insufficient to determine the business usefulness of a clustering solution.
+- The high number of DBSCAN clusters may make the resulting segmentation difficult to interpret or apply in practice.
+- No external business labels are available to independently validate the discovered clusters.
 
 ## Project Structure
 
